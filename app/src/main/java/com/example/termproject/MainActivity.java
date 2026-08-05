@@ -13,11 +13,9 @@ import android.view.View;
 import androidx.core.graphics.Insets;
 import androidx.core.view.ViewCompat;
 import androidx.core.view.WindowInsetsCompat;
-import androidx.navigation.NavController;
-import androidx.navigation.Navigation;
+
 import androidx.navigation.ui.AppBarConfiguration;
-import androidx.navigation.ui.NavigationUI;
-import androidx.navigation.fragment.NavHostFragment;
+
 
 import com.example.termproject.databinding.ActivityMainBinding;
 
@@ -44,15 +42,6 @@ public class MainActivity extends AppCompatActivity {
         });
         setSupportActionBar(binding.toolbar);
 
-        NavHostFragment navHostFragment = (NavHostFragment) getSupportFragmentManager()
-                .findFragmentById(R.id.nav_host_fragment_content_main);
-
-        if (navHostFragment != null) {
-            NavController navController = navHostFragment.getNavController();
-
-            appBarConfiguration = new AppBarConfiguration.Builder(navController.getGraph()).build();
-            NavigationUI.setupActionBarWithNavController(this, navController, appBarConfiguration);
-        }
 
         binding.fab.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -86,12 +75,4 @@ public class MainActivity extends AppCompatActivity {
         return super.onOptionsItemSelected(item);
     }
 
-    @Override
-    public boolean onSupportNavigateUp() {
-        NavHostFragment navHostFragment = (NavHostFragment) getSupportFragmentManager()
-                .findFragmentById(R.id.nav_host_fragment_content_main);
-        NavController navController = navHostFragment.getNavController();
-        return NavigationUI.navigateUp(navController, appBarConfiguration)
-                || super.onSupportNavigateUp();
-    }
 }
