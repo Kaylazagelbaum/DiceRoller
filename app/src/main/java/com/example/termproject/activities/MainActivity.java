@@ -2,9 +2,11 @@ package com.example.termproject.activities;
 
 import android.content.Intent;
 import android.os.Bundle;
+import android.view.View;
 import android.widget.Button;
-import android.widget.GridLayout;
+import androidx.gridlayout.widget.GridLayout;
 import android.widget.PopupMenu;
+import android.widget.TextView;
 
 import androidx.activity.EdgeToEdge;
 import androidx.appcompat.app.AppCompatActivity;
@@ -16,10 +18,16 @@ import com.example.termproject.R;
 import com.example.termproject.databinding.ActivityMainBinding;
 import com.google.android.material.snackbar.Snackbar;
 
+
 public class MainActivity extends AppCompatActivity {
 
     private ActivityMainBinding binding;
     private Snackbar mSnackBar;
+
+    private String currentPlayer = "Player 1";
+    private TextView turnIndicator;
+
+    boolean isPlayer1Turn = true;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -45,41 +53,13 @@ public class MainActivity extends AppCompatActivity {
 
         setSupportActionBar(binding.toolbar);
 
-        GridLayout gridLayout = findViewById(R.id.gridLayout);
+        turnIndicator = binding.content.turnIndicator;
+
+        GridLayout gridLayout = binding.content.gridLayout;
         gridLayout.setColumnCount(7);
         gridLayout.setRowCount(6);
 
-        for (int row = 0; row < 6; row++) {
-            for (int col = 0; col < 7; col++) {
-                Button circleButton = new Button(this);
-
-                // Set circular background
-                circleButton.setBackgroundResource(R.drawable.token_circle);
-
-                // Set explicit size for the grid slots (e.g., 60dp)
-                int sizeInPx = (int) (60 * getResources().getDisplayMetrics().density);
-                GridLayout.LayoutParams params = new GridLayout.LayoutParams();
-                params.width = sizeInPx;
-                params.height = sizeInPx;
-                params.rowSpec = GridLayout.spec(row);
-                params.columnSpec = GridLayout.spec(col);
-
-                // Optional margins between buttons
-                int margin = (int) (4 * getResources().getDisplayMetrics().density);
-                params.setMargins(margin, margin, margin, margin);
-
-                circleButton.setLayoutParams(params);
-
-                // Optional click listener
-                final int r = row;
-                final int c = col;
-                circleButton.setOnClickListener(v -> {
-                    // Handle button click at (r, c)
-                });
-
-                gridLayout.addView(circleButton);
-            }
-        }
+        setup_game_grid(gridLayout);
 
         // Hamburger on the LEFT
         binding.toolbar.setNavigationIcon(R.drawable.menu_icon);
@@ -123,6 +103,50 @@ public class MainActivity extends AppCompatActivity {
         });
     }
 
+    private void setup_game_grid(GridLayout gridLayout) {
+        for (int row = 0; row < 6; row++) {
+            for (int col = 0; col < 7; col++) {
+                Button circleButton = new Button(this);
+
+                // Set circular background
+                circleButton.setBackgroundResource(R.drawable.token_circle);
+
+                // Set explicit size for the grid slots (e.g., 60dp)
+                int sizeInPx = (int) (60 * getResources().getDisplayMetrics().density);
+                GridLayout.LayoutParams params = new GridLayout.LayoutParams();
+                params.width = sizeInPx;
+                params.height = sizeInPx;
+                params.rowSpec = GridLayout.spec(row);
+                params.columnSpec = GridLayout.spec(col);
+
+                // Optional margins between buttons
+                int margin = (int) (4 * getResources().getDisplayMetrics().density);
+                params.setMargins(margin, margin, margin, margin);
+
+                circleButton.setLayoutParams(params);
+
+                // Optional click listener
+                final int r = row;
+                final int c = col;
+                circleButton.setOnClickListener(new View.OnClickListener() {
+                    @Override
+                    public void onClick(View v) {
+                        if (isPlayer1Turn) {
+                            circleButton.setBackgroundResource(R.drawable.red_token);
+                            turnIndicator.setText("Player 2's Turn");
+                        } else {
+                            circleButton.setBackgroundResource(R.drawable.yellow_token);
+                            turnIndicator.setText("Player 1's Turn");
+                        }
+                        isPlayer1Turn = !isPlayer1Turn;
+                    }});
+
+
+                gridLayout.addView(circleButton);
+            }
+        }
+    }
+
     private void showSettings() {
         dismissSnackBarIfShown();
 
@@ -145,6 +169,92 @@ public class MainActivity extends AppCompatActivity {
         if (mSnackBar != null && mSnackBar.isShown()) {
             mSnackBar.dismiss();
         }
+    }
+    
+    private boolean checkWin(int[][] board, int row, int col, int player) {
+        return checkHorizontal(board, row, player) ||
+                checkVertical(board, col, player) ||
+                checkDiagonal1(board, row, col, player) ||
+                checkDiagonal2(board, row, col, player);
+
+    }
+
+    private boolean checkDiagonal2(int[][] board, int row, int col, int player) {
+        int count = 0;
+        int r = row;
+        int c = col;
+
+        while (r < 5 && c > 0) {
+            r++;
+            c--;
+        }
+        while (r >= 0 && c < 7) {
+            if (board[r][c] == player) {
+                count++;
+                if (count == 4)
+                    return true;
+            } else {
+                count = 0;
+            }
+            r--;
+            c++;
+        }
+        return false;
+    }
+
+    private boolean checkDiagonal1(int[][] board, int row, int col, int player) {
+        int count = 0;
+        int r = row;
+        int c = col;
+
+        while (r > 0 && c > 0) {
+            r--;
+            c--;
+        }
+        while (r < 6 && c < 7) {
+            if (board[r][c] == player) {
+                count++;
+                if (count == 4) {
+                    return true;
+                }
+            } else {
+                count = 0;
+            }
+            r++;
+            c++;
+        }
+        return false;
+    }
+
+    private boolean checkVertical(int[][] board, int col, int player) {
+        int count = 0;
+        for (int row = 0; row < 6; row++) {
+            if (board[row][col] == player) {
+                count++;
+                if (count == 4) {
+                    return true;
+                }
+            } else {
+                count = 0;
+            }
+        }
+        return false;
+    }
+    
+
+    private boolean checkHorizontal(int[][] board, int row, int player) {
+        int count = 0;
+        for (int col = 0; col < 7; col++) {
+            if (board[row][col] == player) {
+                count++;
+                if (count == 4) {
+                    return true;
+                }
+            } else {
+                count = 0;
+            }
+        }
+        return false;
     }
 }
 
