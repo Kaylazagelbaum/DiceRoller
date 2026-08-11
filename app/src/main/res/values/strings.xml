@@ -1,0 +1,26 @@
+<resources>
+    <string name="app_name">Term Project</string>
+    <string name="action_settings">Settings</string>
+    <string name="title_activity_settings">SettingsActivity</string>
+
+    <!-- Preference Strings -->
+    <string name="display_header">Display</string>
+    <string name="game_header">Game</string>
+
+    <string name="night_mode_key">Night Mode</string>
+    <string name="night_mode_title">Night/Dark Mode</string>
+    <string name="night_mode_off">Never use Night/Dark Mode</string>
+    <string name="night_mode_on">Use Night/Dark Mode (unless disabled in OS Settings)</string>
+    <string name="FAB">fab</string>
+    <string name="action_about">about\n</string>
+    <string name="show_winner_message">Show Winner Message</string>
+    <string name="key_winner_message">winner message</string>
+    <string name="confetti_key">Confetti key</string>
+    <string name="winner_message_on">Don’t show a winner message when the winner is announced.</string>
+    <string name="winner_message_off">Show a congratulatory winner message when the winner is announced.</string>
+    <string name="confetti_on">Don’t show confetti when the winner is announced.</string>
+    <string name="confetti_off">Show falling confetti when the winner is announced.</string>
+    <string name="confetti">Confetti</string>
+
+
+</resources>
