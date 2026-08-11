@@ -18,9 +18,6 @@ import androidx.preference.Preference;
 import androidx.preference.PreferenceFragmentCompat;
 import androidx.preference.PreferenceManager;
 
-import androidx.preference.Preference;
-import androidx.preference.PreferenceFragmentCompat;
-
 import com.example.termproject.R;
 
 
@@ -45,21 +42,20 @@ public class SettingsActivity extends AppCompatActivity {
     public static class SettingsFragment extends PreferenceFragmentCompat {
         @Override
         public void onCreatePreferences(Bundle savedInstanceState, String rootKey) {
-            // Load the preferences XML file
             setPreferencesFromResource(R.xml.root_preferences, rootKey);
-            // Find the Night Mode preference
-            Preference nightModePreference = findPreference(getString(R.string.night_mode_key));
-            // Set the listener
-            if (nightModePreference != null) {
-                nightModePreference.setOnPreferenceChangeListener( (preference, newValue) -> { boolean newBooleanValue = (Boolean) newValue; setNightModeOnOrOff(newBooleanValue); return true; } ); } } }
-        }
 
-    private void attachFragment(Bundle savedInstanceState) {
-        if (savedInstanceState == null) {
-            getSupportFragmentManager()
-                    .beginTransaction()
-                    .replace(R.id.settings, new SettingsFragment())
-                    .commit();
+            Preference nightModePreference =
+                    findPreference(getString(R.string.night_mode_key));
+            if (nightModePreference != null) {
+                nightModePreference.setOnPreferenceChangeListener(
+                        (preference, newValue) -> {
+                            boolean newBooleanValue = (Boolean) newValue;
+                            setNightModeOnOrOff(newBooleanValue);
+                            return true;
+                        }
+                        );
+            }
+
         }
     }
 
@@ -73,38 +69,19 @@ public class SettingsActivity extends AppCompatActivity {
         }
     }
 
-    public class SettingsFragment extends PreferenceFragmentCompat {
-        @Override
-        public void onCreatePreferences(Bundle savedInstanceState, String rootKey) {
-            setPreferencesFromResource(R.xml.root_preferences, rootKey);
-
-            Preference nightModePreference =
-                    findPreference(getString(R.string.night_mode_key));
-
-            setNightModePreferenceListener();
-
-        }
-        }
-
-        private void setNightModePreferenceListener() {
-            Preference nightModePreference = findPreference(getString(R.string.night_mode_key));
-            if (nightModePreference != null) {
-                nightModePreference.setOnPreferenceChangeListener((preference, newValue) -> {
-                    Boolean newBooleanValue = (Boolean) newValue;
-                    setNightModeOnOrOff(newBooleanValue);
-                    return true;
-                });
-            }
-        }
-
+    /** * Turns Night Mode on or off. */
     public static void setNightModeOnOrOff(boolean setToOn) {
         int onMode  =  Build.VERSION.SDK_INT < 28 ? MODE_NIGHT_YES : MODE_NIGHT_FOLLOW_SYSTEM;
         AppCompatDelegate.setDefaultNightMode(setToOn ? onMode : MODE_NIGHT_NO);
     }
+
+
+    /** * Applies the Night Mode setting based on the saved preference. */
     public static void setNightModeOnOffFromPreferenceValue(Context context, String keyNightMode) {
         setNightModeOnOrOff(isNightModePrefOn(context, keyNightMode));
     }
 
+    /** * Gets the saved Night Mode preference. */
     private static boolean isNightModePrefOn(Context context, String keyNightMode) {
         SharedPreferences defaultSharedPreferences = PreferenceManager.getDefaultSharedPreferences(context);
         return defaultSharedPreferences.getBoolean(keyNightMode, true);

@@ -2,26 +2,18 @@ package com.example.termproject.activities;
 
 import android.content.Intent;
 import android.os.Bundle;
+import android.view.Menu;
+import android.view.MenuItem;
 
 import androidx.activity.EdgeToEdge;
-
-import com.example.termproject.activities.SettingsActivity;
-import com.google.android.material.snackbar.Snackbar;
-
 import androidx.appcompat.app.AppCompatActivity;
-
-import android.view.View;
-
 import androidx.core.graphics.Insets;
 import androidx.core.view.ViewCompat;
 import androidx.core.view.WindowInsetsCompat;
 
-
+import com.example.termproject.R;
 import com.example.termproject.databinding.ActivityMainBinding;
-
-import android.view.Menu;
-import android.view.MenuItem;
-
+import com.google.android.material.snackbar.Snackbar;
 
 public class MainActivity extends AppCompatActivity {
 
@@ -44,13 +36,15 @@ public class MainActivity extends AppCompatActivity {
         setSupportActionBar(binding.toolbar);
 
 
-        binding.fab.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                Snackbar.make(view, "Replace with your own action", Snackbar.LENGTH_LONG)
-                        .setAnchorView(R.id.fab)
-                        .setAction("Action", null).show();
-            }
+        binding.fab.setOnClickListener(view -> {
+            mSnackBar = Snackbar.make(
+                    view,
+                    "Replace with your own action",
+                    Snackbar.LENGTH_LONG
+            );
+
+            mSnackBar.setAction("Action", null);
+            mSnackBar.show();
         });
     }
 
@@ -70,9 +64,9 @@ public class MainActivity extends AppCompatActivity {
 
         //noinspection SimplifiableIfStatement
         if (id == R.id.action_settings) {
-            showsettings();
+            showSettings();
             return true;
-        }else if (itemId == R.id.action_about) {
+        } else if (id == R.id.action_about) {
             showAbout();
             return true;
         }
@@ -82,30 +76,28 @@ public class MainActivity extends AppCompatActivity {
 
     private void showSettings() {
         dismissSnackBarIfShown();
-        Intent intent = new Intent(getApplicationContext(), SettingsActivity.class);
-        settingsLauncher.launch(intent);
-    }
-    private void showAbout() {
-        dismissSnackBarIfShown();
-        showInfoDialog(MainActivity.this, "About Connect Four",
-                "We have to write something here");
+
+        Intent intent = new Intent(MainActivity.this, SettingsActivity.class);
+        startActivity(intent);
     }
 
+    private void showAbout() {
+        dismissSnackBarIfShown();
+
+        new androidx.appcompat.app.AlertDialog.Builder(this)
+                .setTitle("About Connect Four")
+                .setMessage("We have to write something here")
+                .setPositiveButton("OK", null)
+                .show();
+    }
+
+
     private void dismissSnackBarIfShown() {
-        if (mSnackBar.isShown()) {
+        if (mSnackBar != null && mSnackBar.isShown()) {
             mSnackBar.dismiss();
         }
     }
-
-    private void showGameOverMessageIfGameNowOver() {
-        if (mGame.isGameOver()) {
-            dismissSnackBarIfShown();
-            showInfoDialog(this, getString(R.string.game_over),
-                    getString(R.string.winner_is_player_number) +
-                            mGame.getWinningPlayerNumberIfGameOver() +
-                            ". " + getString(
-                            R.string.games_played) + mGame.getNumberOfGamesPlayed());
-        }
-    }
-
 }
+
+
+

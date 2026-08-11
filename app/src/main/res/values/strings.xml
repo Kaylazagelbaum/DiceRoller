@@ -12,7 +12,7 @@
     <string name="night_mode_off">Never use Night/Dark Mode</string>
     <string name="night_mode_on">Use Night/Dark Mode (unless disabled in OS Settings)</string>
     <string name="FAB">fab</string>
-    <string name="action_about">about\n</string>
+    <string name="action_about">About\n</string>
     <string name="show_winner_message">Show Winner Message</string>
     <string name="key_winner_message">winner message</string>
     <string name="confetti_key">Confetti key</string>
