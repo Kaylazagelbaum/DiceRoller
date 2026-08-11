@@ -2,6 +2,8 @@ package com.example.termproject.activities;
 
 import android.content.Intent;
 import android.os.Bundle;
+import android.widget.Button;
+import android.widget.GridLayout;
 import android.widget.PopupMenu;
 
 import androidx.activity.EdgeToEdge;
@@ -42,6 +44,42 @@ public class MainActivity extends AppCompatActivity {
         });
 
         setSupportActionBar(binding.toolbar);
+
+        GridLayout gridLayout = findViewById(R.id.gridLayout);
+        gridLayout.setColumnCount(7);
+        gridLayout.setRowCount(6);
+
+        for (int row = 0; row < 6; row++) {
+            for (int col = 0; col < 7; col++) {
+                Button circleButton = new Button(this);
+
+                // Set circular background
+                circleButton.setBackgroundResource(R.drawable.token_circle);
+
+                // Set explicit size for the grid slots (e.g., 60dp)
+                int sizeInPx = (int) (60 * getResources().getDisplayMetrics().density);
+                GridLayout.LayoutParams params = new GridLayout.LayoutParams();
+                params.width = sizeInPx;
+                params.height = sizeInPx;
+                params.rowSpec = GridLayout.spec(row);
+                params.columnSpec = GridLayout.spec(col);
+
+                // Optional margins between buttons
+                int margin = (int) (4 * getResources().getDisplayMetrics().density);
+                params.setMargins(margin, margin, margin, margin);
+
+                circleButton.setLayoutParams(params);
+
+                // Optional click listener
+                final int r = row;
+                final int c = col;
+                circleButton.setOnClickListener(v -> {
+                    // Handle button click at (r, c)
+                });
+
+                gridLayout.addView(circleButton);
+            }
+        }
 
         // Hamburger on the LEFT
         binding.toolbar.setNavigationIcon(R.drawable.menu_icon);
