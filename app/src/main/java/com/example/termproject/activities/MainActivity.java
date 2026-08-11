@@ -2,8 +2,7 @@ package com.example.termproject.activities;
 
 import android.content.Intent;
 import android.os.Bundle;
-import android.view.Menu;
-import android.view.MenuItem;
+import android.widget.PopupMenu;
 
 import androidx.activity.EdgeToEdge;
 import androidx.appcompat.app.AppCompatActivity;
@@ -29,12 +28,50 @@ public class MainActivity extends AppCompatActivity {
         setContentView(binding.getRoot());
 
         ViewCompat.setOnApplyWindowInsetsListener(binding.main, (v, insets) -> {
-            Insets systemBars = insets.getInsets(WindowInsetsCompat.Type.systemBars());
-            v.setPadding(systemBars.left, systemBars.top, systemBars.right, systemBars.bottom);
+            Insets systemBars =
+                    insets.getInsets(WindowInsetsCompat.Type.systemBars());
+
+            v.setPadding(
+                    systemBars.left,
+                    systemBars.top,
+                    systemBars.right,
+                    systemBars.bottom
+            );
+
             return insets;
         });
+
         setSupportActionBar(binding.toolbar);
 
+        // Hamburger on the LEFT
+        binding.toolbar.setNavigationIcon(R.drawable.menu_icon);
+
+        binding.toolbar.setNavigationOnClickListener(view -> {
+
+            PopupMenu popupMenu =
+                    new PopupMenu(MainActivity.this, binding.toolbar);
+
+            popupMenu.getMenuInflater()
+                    .inflate(R.menu.menu_main, popupMenu.getMenu());
+
+            popupMenu.setOnMenuItemClickListener(item -> {
+
+                int id = item.getItemId();
+
+                if (id == R.id.action_settings) {
+                    showSettings();
+                    return true;
+
+                } else if (id == R.id.action_about) {
+                    showAbout();
+                    return true;
+                }
+
+                return false;
+            });
+
+            popupMenu.show();
+        });
 
         binding.fab.setOnClickListener(view -> {
             mSnackBar = Snackbar.make(
@@ -46,32 +83,6 @@ public class MainActivity extends AppCompatActivity {
             mSnackBar.setAction("Action", null);
             mSnackBar.show();
         });
-    }
-
-    @Override
-    public boolean onCreateOptionsMenu(Menu menu) {
-        // Inflate the menu; this adds items to the action bar if it is present.
-        getMenuInflater().inflate(R.menu.menu_main, menu);
-        return true;
-    }
-
-    @Override
-    public boolean onOptionsItemSelected(MenuItem item) {
-        // Handle action bar item clicks here. The action bar will
-        // automatically handle clicks on the Home/Up button, so long
-        // as you specify a parent activity in AndroidManifest.xml.
-        int id = item.getItemId();
-
-        //noinspection SimplifiableIfStatement
-        if (id == R.id.action_settings) {
-            showSettings();
-            return true;
-        } else if (id == R.id.action_about) {
-            showAbout();
-            return true;
-        }
-
-        return super.onOptionsItemSelected(item);
     }
 
     private void showSettings() {

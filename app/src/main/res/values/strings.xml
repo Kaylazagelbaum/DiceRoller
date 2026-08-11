@@ -21,6 +21,7 @@
     <string name="confetti_on">Don’t show confetti when the winner is announced.</string>
     <string name="confetti_off">Show falling confetti when the winner is announced.</string>
     <string name="confetti">Confetti</string>
+    <string name="menu">Menu</string>
 
 
 </resources>
