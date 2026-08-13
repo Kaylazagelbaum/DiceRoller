@@ -17,6 +17,8 @@ import androidx.core.view.WindowInsetsCompat;
 import com.example.termproject.R;
 import com.example.termproject.databinding.ActivityMainBinding;
 import com.google.android.material.snackbar.Snackbar;
+import android.content.SharedPreferences;
+import androidx.preference.PreferenceManager;
 
 
 public class MainActivity extends AppCompatActivity {
@@ -28,28 +30,21 @@ public class MainActivity extends AppCompatActivity {
     private TextView turnIndicator;
 
     boolean isPlayer1Turn = true;
+    private int[][] board = new int[6][7];
+    private boolean gameOver = false;
+    private boolean showTurnIndicator;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        EdgeToEdge.enable(this);
+        // EdgeToEdge.enable(this);
 
         binding = ActivityMainBinding.inflate(getLayoutInflater());
         setContentView(binding.getRoot());
 
-        ViewCompat.setOnApplyWindowInsetsListener(binding.main, (v, insets) -> {
-            Insets systemBars =
-                    insets.getInsets(WindowInsetsCompat.Type.systemBars());
 
-            v.setPadding(
-                    systemBars.left,
-                    systemBars.top,
-                    systemBars.right,
-                    systemBars.bottom
-            );
 
-            return insets;
-        });
+
 
         setSupportActionBar(binding.toolbar);
 
@@ -112,7 +107,7 @@ public class MainActivity extends AppCompatActivity {
                 circleButton.setBackgroundResource(R.drawable.token_circle);
 
                 // Set explicit size for the grid slots (e.g., 60dp)
-                int sizeInPx = (int) (60 * getResources().getDisplayMetrics().density);
+                int sizeInPx = (int) (45 * getResources().getDisplayMetrics().density);
                 GridLayout.LayoutParams params = new GridLayout.LayoutParams();
                 params.width = sizeInPx;
                 params.height = sizeInPx;
@@ -120,7 +115,7 @@ public class MainActivity extends AppCompatActivity {
                 params.columnSpec = GridLayout.spec(col);
 
                 // Optional margins between buttons
-                int margin = (int) (4 * getResources().getDisplayMetrics().density);
+                int margin = (int) (2 * getResources().getDisplayMetrics().density);
                 params.setMargins(margin, margin, margin, margin);
 
                 circleButton.setLayoutParams(params);
@@ -128,23 +123,95 @@ public class MainActivity extends AppCompatActivity {
                 // Optional click listener
                 final int r = row;
                 final int c = col;
+
                 circleButton.setOnClickListener(new View.OnClickListener() {
                     @Override
                     public void onClick(View v) {
-                        if (isPlayer1Turn) {
-                            circleButton.setBackgroundResource(R.drawable.red_token);
-                            turnIndicator.setText("Player 2's Turn");
-                        } else {
-                            circleButton.setBackgroundResource(R.drawable.yellow_token);
-                            turnIndicator.setText("Player 1's Turn");
+
+                        // Don't allow moves after the game has ended
+                        if (gameOver) {
+                            return;
                         }
+
+                        if (board[r][c] != 0) {
+                            return;
+                        }
+
+                        int player;
+
+                        if (isPlayer1Turn) {
+                            player = 1;
+                            circleButton.setBackgroundResource(R.drawable.red_token);
+                            if (showTurnIndicator) {
+                                turnIndicator.setText("Player 2's Turn");
+                            }
+                        } else {
+                            player = 2;
+                            circleButton.setBackgroundResource(R.drawable.yellow_token);
+                            if (showTurnIndicator) {
+                                turnIndicator.setText("Player 1's Turn");
+                            }
+                        }
+
+                        // Store the move in the board
+                        board[r][c] = player;
+
+                        // Check if this player has won
+                        if (checkWin(board, r, c, player)) {
+                            gameOver = true;
+
+                            String winner;
+
+                            if (player == 1) {
+                                winner = "Player 1";
+                            } else {
+                                winner = "Player 2";
+                            }
+
+                            new androidx.appcompat.app.AlertDialog.Builder(MainActivity.this)
+                                    .setTitle("Game Over!")
+                                    .setMessage(winner + " wins!")
+                                    .setPositiveButton("OK", null)
+                                    .setCancelable(false)
+                                    .show();
+
+                            return;
+                        }
+
+                        // Switch player only if nobody has won
                         isPlayer1Turn = !isPlayer1Turn;
-                    }});
+                    }
+                });
 
 
                 gridLayout.addView(circleButton);
             }
         }
+    }
+
+    @Override
+    protected void onResume() {
+        super.onResume();
+
+        if (turnIndicator == null) {
+            return;
+        }
+
+        SharedPreferences preferences =
+                PreferenceManager.getDefaultSharedPreferences(this);
+
+        showTurnIndicator =
+                preferences.getBoolean("show_turn_indicator", true);
+
+        if (showTurnIndicator) {
+            turnIndicator.setText(
+                    isPlayer1Turn ? "Player 1's Turn" : "Player 2's Turn"
+            );
+        } else {
+            turnIndicator.setText("Connect Four Game");
+        }
+
+        turnIndicator.setVisibility(View.VISIBLE);
     }
 
     private void showSettings() {
@@ -256,6 +323,7 @@ public class MainActivity extends AppCompatActivity {
         }
         return false;
     }
+
 }
 
 

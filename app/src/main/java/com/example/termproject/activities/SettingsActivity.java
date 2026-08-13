@@ -3,11 +3,11 @@ package com.example.termproject.activities;
 import static androidx.appcompat.app.AppCompatDelegate.MODE_NIGHT_FOLLOW_SYSTEM;
 import static androidx.appcompat.app.AppCompatDelegate.MODE_NIGHT_NO;
 import static androidx.appcompat.app.AppCompatDelegate.MODE_NIGHT_YES;
+import android.content.SharedPreferences;
+import android.os.Bundle;
 
 import android.content.Context;
-import android.content.SharedPreferences;
 import android.os.Build;
-import android.os.Bundle;
 import android.view.MenuItem;
 
 import androidx.annotation.NonNull;
@@ -86,4 +86,5 @@ public class SettingsActivity extends AppCompatActivity {
         SharedPreferences defaultSharedPreferences = PreferenceManager.getDefaultSharedPreferences(context);
         return defaultSharedPreferences.getBoolean(keyNightMode, true);
     }
+
 }

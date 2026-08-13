@@ -13,10 +13,10 @@
     <PreferenceCategory app:title="@string/game_header">
         <SwitchPreferenceCompat
             app:defaultValue="true"
-            app:key="@string/key_winner_message"
-            app:summaryOff="@string/winner_message_on"
-            app:summaryOn="@string/winner_message_off"
-            app:title="@string/show_winner_message"/>
+            app:key="@string/turn_indicator_key"
+            app:summaryOff="@string/turn_indicator_off"
+            app:summaryOn="@string/turn_indicator_on"
+            app:title="@string/show_turn_indicator"/>
 
         <SwitchPreferenceCompat
             app:defaultValue="true"
