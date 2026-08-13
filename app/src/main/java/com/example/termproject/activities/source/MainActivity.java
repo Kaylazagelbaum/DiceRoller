@@ -226,7 +226,7 @@ public class MainActivity extends AppCompatActivity {
 
         new androidx.appcompat.app.AlertDialog.Builder(this)
                 .setTitle("About Connect Four")
-                .setMessage("We have to write something here")
+                .setMessage("Connect Four is a fun two player game.\nTake to turns dropping one token into the board.\nThe first player to get four in a row wins!")
                 .setPositiveButton("OK", null)
                 .show();
     }
