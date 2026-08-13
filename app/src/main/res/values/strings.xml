@@ -24,6 +24,7 @@
     <string name="turn_indicator_off">Don\'t show whose turn it is during the game.</string>
     <string name="restart_game">Restart Game</string>
     <string name="player_1_s_turn">Player 1\'s Turn</string>
+    <string name="tap_on_a_column_to_drop_your_token">Tap on a column to drop your token</string>
 
 
 </resources>

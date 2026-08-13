@@ -1,4 +1,4 @@
-package com.example.termproject.activities;
+package com.example.termproject.activities.source;
 
 import android.content.Intent;
 import android.os.Bundle;
@@ -8,13 +8,10 @@ import androidx.gridlayout.widget.GridLayout;
 import android.widget.PopupMenu;
 import android.widget.TextView;
 
-import androidx.activity.EdgeToEdge;
 import androidx.appcompat.app.AppCompatActivity;
-import androidx.core.graphics.Insets;
-import androidx.core.view.ViewCompat;
-import androidx.core.view.WindowInsetsCompat;
 
 import com.example.termproject.R;
+import com.example.termproject.activities.models.TermProject;
 import com.example.termproject.databinding.ActivityMainBinding;
 import com.google.android.material.snackbar.Snackbar;
 import android.content.SharedPreferences;
@@ -29,10 +26,10 @@ public class MainActivity extends AppCompatActivity {
     private String currentPlayer = "Player 1";
     private TextView turnIndicator;
 
-    boolean isPlayer1Turn = true;
-    private int[][] board = new int[6][7];
-    private boolean gameOver = false;
+    private TermProject game = new TermProject();
     private boolean showTurnIndicator;
+
+    private Button[][] buttons = new Button[6][7];
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -42,10 +39,6 @@ public class MainActivity extends AppCompatActivity {
         binding = ActivityMainBinding.inflate(getLayoutInflater());
         setContentView(binding.getRoot());
 
-
-
-
-
         setSupportActionBar(binding.toolbar);
 
         turnIndicator = binding.content.turnIndicator;
@@ -53,10 +46,17 @@ public class MainActivity extends AppCompatActivity {
         GridLayout gridLayout = binding.content.gridLayout;
         gridLayout.setColumnCount(7);
         gridLayout.setRowCount(6);
-
         setup_game_grid(gridLayout);
 
         // Hamburger on the LEFT
+        setupMenu();
+
+        binding.fab.setOnClickListener(view -> {
+            restartGame();
+        });
+    }
+
+    private void setupMenu() {
         binding.toolbar.setNavigationIcon(R.drawable.menu_icon);
 
         binding.toolbar.setNavigationOnClickListener(view -> {
@@ -85,17 +85,31 @@ public class MainActivity extends AppCompatActivity {
 
             popupMenu.show();
         });
+    }
 
-        binding.fab.setOnClickListener(view -> {
-            mSnackBar = Snackbar.make(
-                    view,
-                    "Replace with your own action",
-                    Snackbar.LENGTH_LONG
-            );
+    private void restartGame() {
+        // Reset board logic
+        game.reset();
 
-            mSnackBar.setAction("Action", null);
-            mSnackBar.show();
-        });
+        // Reset UI
+        for (int row = 0; row < 6; row++) {
+            for (int col = 0; col < 7; col++) {
+                buttons[row][col].setBackgroundResource(R.drawable.token_circle);
+            }
+        }
+
+        updateTurnIndicator();
+
+        Snackbar.make(binding.getRoot(), "Game Restarted", Snackbar.LENGTH_SHORT).show();
+    }
+
+    private void updateTurnIndicator() {
+        if (showTurnIndicator) {
+            String text = (game.getCurrentPlayer() == 1) ? "Player 1's Turn" : "Player 2's Turn";
+            turnIndicator.setText(text);
+        } else {
+            turnIndicator.setText("Connect Four Game");
+        }
     }
 
     private void setup_game_grid(GridLayout gridLayout) {
@@ -107,7 +121,7 @@ public class MainActivity extends AppCompatActivity {
                 circleButton.setBackgroundResource(R.drawable.token_circle);
 
                 // Set explicit size for the grid slots (e.g., 60dp)
-                int sizeInPx = (int) (45 * getResources().getDisplayMetrics().density);
+                int sizeInPx = (int) (50 * getResources().getDisplayMetrics().density);
                 GridLayout.LayoutParams params = new GridLayout.LayoutParams();
                 params.width = sizeInPx;
                 params.height = sizeInPx;
@@ -119,6 +133,7 @@ public class MainActivity extends AppCompatActivity {
                 params.setMargins(margin, margin, margin, margin);
 
                 circleButton.setLayoutParams(params);
+                buttons[row][col] = circleButton;
 
                 // Optional click listener
                 final int r = row;
@@ -127,46 +142,31 @@ public class MainActivity extends AppCompatActivity {
                 circleButton.setOnClickListener(new View.OnClickListener() {
                     @Override
                     public void onClick(View v) {
-
-                        // Don't allow moves after the game has ended
-                        if (gameOver) {
+                        if (game.isGameOver()) {
                             return;
                         }
 
-                        if (board[r][c] != 0) {
+                        int activePlayer = game.getCurrentPlayer();
+                        int rowToPlace = game.placeToken(c);
+
+                        // If column is full, return
+                        if (rowToPlace == -1) {
                             return;
                         }
 
-                        int player;
-
-                        if (isPlayer1Turn) {
-                            player = 1;
-                            circleButton.setBackgroundResource(R.drawable.red_token);
-                            if (showTurnIndicator) {
-                                turnIndicator.setText("Player 2's Turn");
-                            }
+                        // Update the UI
+                        Button targetButton = buttons[rowToPlace][c];
+                        if (activePlayer == 1) {
+                            targetButton.setBackgroundResource(R.drawable.red_token);
                         } else {
-                            player = 2;
-                            circleButton.setBackgroundResource(R.drawable.yellow_token);
-                            if (showTurnIndicator) {
-                                turnIndicator.setText("Player 1's Turn");
-                            }
+                            targetButton.setBackgroundResource(R.drawable.yellow_token);
                         }
 
-                        // Store the move in the board
-                        board[r][c] = player;
+                        updateTurnIndicator();
 
                         // Check if this player has won
-                        if (checkWin(board, r, c, player)) {
-                            gameOver = true;
-
-                            String winner;
-
-                            if (player == 1) {
-                                winner = "Player 1";
-                            } else {
-                                winner = "Player 2";
-                            }
+                        if (game.isGameOver()) {
+                            String winner = (activePlayer == 1) ? "Player 1" : "Player 2";
 
                             new androidx.appcompat.app.AlertDialog.Builder(MainActivity.this)
                                     .setTitle("Game Over!")
@@ -174,12 +174,7 @@ public class MainActivity extends AppCompatActivity {
                                     .setPositiveButton("OK", null)
                                     .setCancelable(false)
                                     .show();
-
-                            return;
                         }
-
-                        // Switch player only if nobody has won
-                        isPlayer1Turn = !isPlayer1Turn;
                     }
                 });
 
@@ -203,13 +198,7 @@ public class MainActivity extends AppCompatActivity {
         showTurnIndicator =
                 preferences.getBoolean("show_turn_indicator", true);
 
-        if (showTurnIndicator) {
-            turnIndicator.setText(
-                    isPlayer1Turn ? "Player 1's Turn" : "Player 2's Turn"
-            );
-        } else {
-            turnIndicator.setText("Connect Four Game");
-        }
+        updateTurnIndicator();
 
         turnIndicator.setVisibility(View.VISIBLE);
     }
@@ -226,7 +215,7 @@ public class MainActivity extends AppCompatActivity {
 
         new androidx.appcompat.app.AlertDialog.Builder(this)
                 .setTitle("About Connect Four")
-                .setMessage("Connect Four is a fun two player game.\nTake to turns dropping one token into the board.\nThe first player to get four in a row wins!")
+                .setMessage("Connect Four is a fun two player game.\nTake turns dropping one token into the board.\nThe first player to get four in a row wins!")
                 .setPositiveButton("OK", null)
                 .show();
     }
@@ -237,94 +226,5 @@ public class MainActivity extends AppCompatActivity {
             mSnackBar.dismiss();
         }
     }
-    
-    private boolean checkWin(int[][] board, int row, int col, int player) {
-        return checkHorizontal(board, row, player) ||
-                checkVertical(board, col, player) ||
-                checkDiagonal1(board, row, col, player) ||
-                checkDiagonal2(board, row, col, player);
-
-    }
-
-    private boolean checkDiagonal2(int[][] board, int row, int col, int player) {
-        int count = 0;
-        int r = row;
-        int c = col;
-
-        while (r < 5 && c > 0) {
-            r++;
-            c--;
-        }
-        while (r >= 0 && c < 7) {
-            if (board[r][c] == player) {
-                count++;
-                if (count == 4)
-                    return true;
-            } else {
-                count = 0;
-            }
-            r--;
-            c++;
-        }
-        return false;
-    }
-
-    private boolean checkDiagonal1(int[][] board, int row, int col, int player) {
-        int count = 0;
-        int r = row;
-        int c = col;
-
-        while (r > 0 && c > 0) {
-            r--;
-            c--;
-        }
-        while (r < 6 && c < 7) {
-            if (board[r][c] == player) {
-                count++;
-                if (count == 4) {
-                    return true;
-                }
-            } else {
-                count = 0;
-            }
-            r++;
-            c++;
-        }
-        return false;
-    }
-
-    private boolean checkVertical(int[][] board, int col, int player) {
-        int count = 0;
-        for (int row = 0; row < 6; row++) {
-            if (board[row][col] == player) {
-                count++;
-                if (count == 4) {
-                    return true;
-                }
-            } else {
-                count = 0;
-            }
-        }
-        return false;
-    }
-    
-
-    private boolean checkHorizontal(int[][] board, int row, int player) {
-        int count = 0;
-        for (int col = 0; col < 7; col++) {
-            if (board[row][col] == player) {
-                count++;
-                if (count == 4) {
-                    return true;
-                }
-            } else {
-                count = 0;
-            }
-        }
-        return false;
-    }
 
 }
-
-
-

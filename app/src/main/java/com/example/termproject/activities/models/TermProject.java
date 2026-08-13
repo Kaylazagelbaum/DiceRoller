@@ -1,4 +1,4 @@
-package com.example.termproject.activities.source;
+package com.example.termproject.activities.models;
 
 public class TermProject {
     public static final int ROWS = 6;
