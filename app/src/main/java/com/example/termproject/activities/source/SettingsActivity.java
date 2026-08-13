@@ -1,4 +1,4 @@
-package com.example.termproject.activities;
+package com.example.termproject.activities.source;
 
 import static androidx.appcompat.app.AppCompatDelegate.MODE_NIGHT_FOLLOW_SYSTEM;
 import static androidx.appcompat.app.AppCompatDelegate.MODE_NIGHT_NO;

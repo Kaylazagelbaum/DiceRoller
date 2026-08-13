@@ -12,7 +12,7 @@
         android:supportsRtl="true"
         android:theme="@style/Theme.TermProject">
         <activity
-            android:name=".activities.MainActivity"
+            android:name=".activities.source.MainActivity"
             android:exported="true"
             android:theme="@style/Theme.TermProject"
             android:windowSoftInputMode="adjustResize">
@@ -23,7 +23,7 @@
             </intent-filter>
         </activity>
         <activity
-            android:name=".activities.SettingsActivity"
+            android:name=".activities.source.SettingsActivity"
             android:exported="false"
             android:label="@string/title_activity_settings" />
     </application>
