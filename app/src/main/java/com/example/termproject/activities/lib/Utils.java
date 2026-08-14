@@ -18,14 +18,12 @@ public class Utils {
     }
 
     /** * Turns Night Mode on or off. */
-    public static void setNightModeOnOrOff(boolean enabled) {
-        if (enabled) {
-            AppCompatDelegate.setDefaultNightMode(
-                    AppCompatDelegate.MODE_NIGHT_YES);
-        } else {
-            AppCompatDelegate.setDefaultNightMode(
-                    AppCompatDelegate.MODE_NIGHT_FOLLOW_SYSTEM);
-        }
+    public static void setNightModeOnOrOff(boolean setToOn) {
+        AppCompatDelegate.setDefaultNightMode(
+                setToOn
+                        ? AppCompatDelegate.MODE_NIGHT_YES
+                        : AppCompatDelegate.MODE_NIGHT_NO
+        );
     }
     private static boolean isNightModePrefOn(Context context, String keyNightMode) {
         SharedPreferences defaultSharedPreferences = PreferenceManager.getDefaultSharedPreferences(context);

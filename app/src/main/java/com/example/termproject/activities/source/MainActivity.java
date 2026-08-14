@@ -1,6 +1,7 @@
 package com.example.termproject.activities.source;
 
 import android.content.Intent;
+import android.graphics.Color;
 import android.os.Bundle;
 import android.view.View;
 import android.widget.Button;
@@ -17,6 +18,18 @@ import com.google.android.material.snackbar.Snackbar;
 import android.content.SharedPreferences;
 import androidx.preference.PreferenceManager;
 
+import nl.dionsegijn.konfetti.core.Angle;
+import nl.dionsegijn.konfetti.core.Party;
+import nl.dionsegijn.konfetti.core.PartyFactory;
+import nl.dionsegijn.konfetti.core.Spread;
+import nl.dionsegijn.konfetti.core.emitter.Emitter;
+import nl.dionsegijn.konfetti.core.emitter.EmitterConfig;
+import nl.dionsegijn.konfetti.core.models.Shape;
+import nl.dionsegijn.konfetti.xml.KonfettiView;
+import static nl.dionsegijn.konfetti.core.Position.Relative;
+
+import java.util.Arrays;
+import java.util.concurrent.TimeUnit;
 
 public class MainActivity extends AppCompatActivity {
 
@@ -30,6 +43,7 @@ public class MainActivity extends AppCompatActivity {
     private boolean showTurnIndicator;
 
     private Button[][] buttons = new Button[6][7];
+    private boolean confettiEnabled;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -58,6 +72,10 @@ public class MainActivity extends AppCompatActivity {
 
     private void setupMenu() {
         binding.toolbar.setNavigationIcon(R.drawable.menu_icon);
+
+        binding.toolbar.setNavigationIconTint(
+                getColor(R.color.menu_icon_color)
+        );
 
         binding.toolbar.setNavigationOnClickListener(view -> {
 
@@ -166,7 +184,32 @@ public class MainActivity extends AppCompatActivity {
 
                         // Check if this player has won
                         if (game.isGameOver()) {
-                            String winner = (activePlayer == 1) ? "Player 1" : "Player 2";
+
+                            String winner = (activePlayer == 1)
+                                    ? "Player 1"
+                                    : "Player 2";
+
+                            // Check confetti preference
+                            SharedPreferences preferences =
+                                    PreferenceManager
+                                            .getDefaultSharedPreferences(
+                                                    MainActivity.this
+                                            );
+
+                            boolean confettiEnabled =
+                                    preferences.getBoolean(
+                                            getString(
+                                                    R.string.confetti_key
+                                            ),
+                                            true
+                                    );
+
+
+                            // Show confetti if enabled
+                            if (confettiEnabled) {
+                                showConfetti();
+                            }
+
 
                             new androidx.appcompat.app.AlertDialog.Builder(MainActivity.this)
                                     .setTitle("Game Over!")
@@ -226,5 +269,59 @@ public class MainActivity extends AppCompatActivity {
             mSnackBar.dismiss();
         }
     }
+    private void showConfetti() {
 
-}
+        EmitterConfig emitterConfig =
+                new Emitter(
+                        3,
+                        TimeUnit.SECONDS
+                ).perSecond(30);
+
+        Party party =
+                new PartyFactory(emitterConfig)
+
+                        // Shoot upward
+                        .angle(Angle.TOP)
+
+                        // Spread confetti across the screen
+                        .spread(Spread.WIDE)
+
+                        // Confetti speed
+                        .setSpeedBetween(
+                                10f,
+                                30f
+                        )
+
+                        // Confetti colours
+                        .colors(
+                                Arrays.asList(
+                                        0xFFFF0000, // Red
+                                        0xFFFFFF00, // Yellow
+                                        0xFF0000FF, // Blue
+                                        0xFF00FF00, // Green
+                                        0xFFFF00FF  // Magenta
+                                )
+                        )// Confetti shapes
+                        .shapes(
+                                Arrays.asList(
+                                        Shape.Square.INSTANCE,
+                                        Shape.Circle.INSTANCE
+                                )
+                        )
+
+                        // Start from the top-middle
+                        .position(
+                                new Relative(
+                                        0.5,
+                                        0.0
+                                )
+                        )
+
+                        .build();
+
+        binding.konfettiView.start(party);
+    }
+
+
+
+    }
