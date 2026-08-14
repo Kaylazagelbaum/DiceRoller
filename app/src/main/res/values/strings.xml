@@ -9,7 +9,7 @@
 
     <string name="night_mode_key">Night Mode</string>
     <string name="night_mode_title">Night/Dark Mode</string>
-    <string name="night_mode_off">Never use Night/Dark Mode</string>
+    <string name="night_mode_off">Turn off Night/Dark Mode</string>
     <string name="night_mode_on">Use Night/Dark Mode (unless disabled in OS Settings)</string>
     <string name="FAB">fab</string>
     <string name="action_about">About\n</string>
