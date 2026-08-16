@@ -48,5 +48,6 @@ dependencies {
     testImplementation(libs.junit)
     androidTestImplementation(libs.espresso.core)
     androidTestImplementation(libs.ext.junit)
+    implementation("nl.dionsegijn:konfetti-xml:2.0.4")
     implementation("androidx.preference:preference:1.2.0")
 }

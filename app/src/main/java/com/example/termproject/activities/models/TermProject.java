@@ -1,6 +1,12 @@
 package com.example.termproject.activities.models;
 
-public class TermProject {
+import com.example.termproject.R;
+
+import nl.dionsegijn.konfetti.xml.KonfettiView;
+
+import java.io.Serializable;
+
+public class TermProject implements Serializable {
     public static final int ROWS = 6;
     public static final int COLS = 7;
 

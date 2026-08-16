@@ -1,12 +1,12 @@
 <resources>
     <dimen name="fab_margin">16dp</dimen>
-    <dimen name="_4dp">4dp</dimen>
-    <dimen name="_12dp">12dp</dimen>
-    <dimen name="_16dp">16dp</dimen>
-    <dimen name="_19sp">19sp</dimen>
-    <dimen name="_25dp">25dp</dimen>
-    <dimen name="_6dp">6dp</dimen>
-    <dimen name="_50dp">50dp</dimen>
-    <dimen name="_14dp">14dp</dimen>
-    <dimen name="_20sp">20sp</dimen>
+    <dimen name="token_size">50dp</dimen>
+    <dimen name="grid_margin">2dp</dimen>
+    <dimen name="constraint_layout_padding_sides">12dp</dimen>
+    <dimen name="constraint_layout_padding_top_and_bottom">16dp</dimen>
+    <dimen name="grid_padding">6dp</dimen>
+    <dimen name="textview_margin_top">18dp</dimen>
+    <dimen name="textview_padding">14dp</dimen>
+    <dimen name="textview_text_size">20sp</dimen>
+    <dimen name="settings_horizontal_margin">0dp</dimen>
 </resources>

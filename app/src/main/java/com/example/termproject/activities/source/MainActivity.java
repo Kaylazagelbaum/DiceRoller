@@ -1,7 +1,6 @@
 package com.example.termproject.activities.source;
 
 import android.content.Intent;
-import android.graphics.Color;
 import android.os.Bundle;
 import android.view.View;
 import android.widget.Button;
@@ -18,18 +17,19 @@ import com.google.android.material.snackbar.Snackbar;
 import android.content.SharedPreferences;
 import androidx.preference.PreferenceManager;
 
-import nl.dionsegijn.konfetti.core.Angle;
+//for confetti effect
 import nl.dionsegijn.konfetti.core.Party;
 import nl.dionsegijn.konfetti.core.PartyFactory;
-import nl.dionsegijn.konfetti.core.Spread;
 import nl.dionsegijn.konfetti.core.emitter.Emitter;
 import nl.dionsegijn.konfetti.core.emitter.EmitterConfig;
 import nl.dionsegijn.konfetti.core.models.Shape;
+import nl.dionsegijn.konfetti.core.models.Size;
 import nl.dionsegijn.konfetti.xml.KonfettiView;
-import static nl.dionsegijn.konfetti.core.Position.Relative;
-
 import java.util.Arrays;
 import java.util.concurrent.TimeUnit;
+import android.graphics.Color;
+import nl.dionsegijn.konfetti.core.Position;
+
 
 public class MainActivity extends AppCompatActivity {
 
@@ -41,9 +41,9 @@ public class MainActivity extends AppCompatActivity {
 
     private TermProject game = new TermProject();
     private boolean showTurnIndicator;
+    private boolean showConfetti;
 
     private Button[][] buttons = new Button[6][7];
-    private boolean confettiEnabled;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -57,10 +57,18 @@ public class MainActivity extends AppCompatActivity {
 
         turnIndicator = binding.content.turnIndicator;
 
+        if (savedInstanceState != null) {
+            game = (TermProject) savedInstanceState.getSerializable("game_state");
+        }
+
         GridLayout gridLayout = binding.content.gridLayout;
         gridLayout.setColumnCount(7);
         gridLayout.setRowCount(6);
         setup_game_grid(gridLayout);
+
+        if (savedInstanceState != null) {
+            syncBoardFromModel();
+        }
 
         // Hamburger on the LEFT
         setupMenu();
@@ -68,39 +76,50 @@ public class MainActivity extends AppCompatActivity {
         binding.fab.setOnClickListener(view -> {
             restartGame();
         });
+
+    }
+
+    private void syncBoardFromModel() {
+        for (int row = 0; row < 6; row++) {
+            for (int col = 0; col < 7; col++) {
+                int player = game.getCell(row, col);
+                if (player == 1) {
+                    buttons[row][col].setBackgroundResource(R.drawable.red_token);
+                } else if (player == 2) {
+                    buttons[row][col].setBackgroundResource(R.drawable.yellow_token);
+                } else {
+                    buttons[row][col].setBackgroundResource(R.drawable.token_circle);
+                }
+            }
+        }
+        updateTurnIndicator();
+    }
+
+    @Override
+    protected void onSaveInstanceState(Bundle outState) {
+        super.onSaveInstanceState(outState);
+        outState.putSerializable("game_state", game);
     }
 
     private void setupMenu() {
         binding.toolbar.setNavigationIcon(R.drawable.menu_icon);
-
-        binding.toolbar.setNavigationIconTint(
-                getColor(R.color.menu_icon_color)
-        );
-
         binding.toolbar.setNavigationOnClickListener(view -> {
-
             PopupMenu popupMenu =
                     new PopupMenu(MainActivity.this, binding.toolbar);
-
             popupMenu.getMenuInflater()
                     .inflate(R.menu.menu_main, popupMenu.getMenu());
-
             popupMenu.setOnMenuItemClickListener(item -> {
 
                 int id = item.getItemId();
-
                 if (id == R.id.action_settings) {
                     showSettings();
                     return true;
-
                 } else if (id == R.id.action_about) {
                     showAbout();
                     return true;
                 }
-
                 return false;
             });
-
             popupMenu.show();
         });
     }
@@ -108,16 +127,13 @@ public class MainActivity extends AppCompatActivity {
     private void restartGame() {
         // Reset board logic
         game.reset();
-
         // Reset UI
         for (int row = 0; row < 6; row++) {
             for (int col = 0; col < 7; col++) {
                 buttons[row][col].setBackgroundResource(R.drawable.token_circle);
             }
         }
-
         updateTurnIndicator();
-
         Snackbar.make(binding.getRoot(), "Game Restarted", Snackbar.LENGTH_SHORT).show();
     }
 
@@ -138,16 +154,15 @@ public class MainActivity extends AppCompatActivity {
                 // Set circular background
                 circleButton.setBackgroundResource(R.drawable.token_circle);
 
-                // Set explicit size for the grid slots (e.g., 60dp)
-                int sizeInPx = (int) (50 * getResources().getDisplayMetrics().density);
+                // Set explicit size for the grid slots from dimens.xml
+                int sizeInPx = getResources().getDimensionPixelSize(R.dimen.token_size);
                 GridLayout.LayoutParams params = new GridLayout.LayoutParams();
                 params.width = sizeInPx;
                 params.height = sizeInPx;
                 params.rowSpec = GridLayout.spec(row);
                 params.columnSpec = GridLayout.spec(col);
 
-                // Optional margins between buttons
-                int margin = (int) (2 * getResources().getDisplayMetrics().density);
+                int margin = getResources().getDimensionPixelSize(R.dimen.grid_margin);
                 params.setMargins(margin, margin, margin, margin);
 
                 circleButton.setLayoutParams(params);
@@ -163,7 +178,6 @@ public class MainActivity extends AppCompatActivity {
                         if (game.isGameOver()) {
                             return;
                         }
-
                         int activePlayer = game.getCurrentPlayer();
                         int rowToPlace = game.placeToken(c);
 
@@ -179,45 +193,8 @@ public class MainActivity extends AppCompatActivity {
                         } else {
                             targetButton.setBackgroundResource(R.drawable.yellow_token);
                         }
-
                         updateTurnIndicator();
-
-                        // Check if this player has won
-                        if (game.isGameOver()) {
-
-                            String winner = (activePlayer == 1)
-                                    ? "Player 1"
-                                    : "Player 2";
-
-                            // Check confetti preference
-                            SharedPreferences preferences =
-                                    PreferenceManager
-                                            .getDefaultSharedPreferences(
-                                                    MainActivity.this
-                                            );
-
-                            boolean confettiEnabled =
-                                    preferences.getBoolean(
-                                            getString(
-                                                    R.string.confetti_key
-                                            ),
-                                            true
-                                    );
-
-
-                            // Show confetti if enabled
-                            if (confettiEnabled) {
-                                showConfetti();
-                            }
-
-
-                            new androidx.appcompat.app.AlertDialog.Builder(MainActivity.this)
-                                    .setTitle("Game Over!")
-                                    .setMessage(winner + " wins!")
-                                    .setPositiveButton("OK", null)
-                                    .setCancelable(false)
-                                    .show();
-                        }
+                        check_for_winner(activePlayer);
                     }
                 });
 
@@ -227,22 +204,37 @@ public class MainActivity extends AppCompatActivity {
         }
     }
 
+    private void check_for_winner(int activePlayer) {
+        // Check if this player has won
+        if (game.isGameOver()) {
+            String winner = (activePlayer == 1) ? "Player 1" : "Player 2";
+            if (showConfetti) {
+                KonfettiView konfettiView = findViewById(R.id.konfettiView);
+                explodeConfetti(konfettiView);
+            }
+
+            new androidx.appcompat.app.AlertDialog.Builder(MainActivity.this)
+                    .setTitle("Game Over!")
+                    .setMessage(winner + " wins!")
+                    .setPositiveButton("OK", null)
+                    .setCancelable(false)
+                    .show();
+        }
+    }
+
     @Override
     protected void onResume() {
         super.onResume();
-
         if (turnIndicator == null) {
             return;
         }
-
         SharedPreferences preferences =
                 PreferenceManager.getDefaultSharedPreferences(this);
-
         showTurnIndicator =
                 preferences.getBoolean("show_turn_indicator", true);
-
+        showConfetti =
+                preferences.getBoolean(getString(R.string.confetti_key), true);
         updateTurnIndicator();
-
         turnIndicator.setVisibility(View.VISIBLE);
     }
 
@@ -258,7 +250,7 @@ public class MainActivity extends AppCompatActivity {
 
         new androidx.appcompat.app.AlertDialog.Builder(this)
                 .setTitle("About Connect Four")
-                .setMessage("Connect Four is a fun two player game.\nTake turns dropping one token into the board.\nThe first player to get four in a row wins!")
+                .setMessage("Connect Four is a fun two player game.\nTake to turns dropping one token into the board.\nThe first player to get four in a row wins!")
                 .setPositiveButton("OK", null)
                 .show();
     }
@@ -269,59 +261,19 @@ public class MainActivity extends AppCompatActivity {
             mSnackBar.dismiss();
         }
     }
-    private void showConfetti() {
-
-        EmitterConfig emitterConfig =
-                new Emitter(
-                        3,
-                        TimeUnit.SECONDS
-                ).perSecond(30);
-
-        Party party =
+    private void explodeConfetti(KonfettiView konfettiView) {
+        EmitterConfig emitterConfig = new Emitter(100L, TimeUnit.MILLISECONDS).max(100);
+        konfettiView.start(
                 new PartyFactory(emitterConfig)
-
-                        // Shoot upward
-                        .angle(Angle.TOP)
-
-                        // Spread confetti across the screen
-                        .spread(Spread.WIDE)
-
-                        // Confetti speed
-                        .setSpeedBetween(
-                                10f,
-                                30f
-                        )
-
-                        // Confetti colours
-                        .colors(
-                                Arrays.asList(
-                                        0xFFFF0000, // Red
-                                        0xFFFFFF00, // Yellow
-                                        0xFF0000FF, // Blue
-                                        0xFF00FF00, // Green
-                                        0xFFFF00FF  // Magenta
-                                )
-                        )// Confetti shapes
-                        .shapes(
-                                Arrays.asList(
-                                        Shape.Square.INSTANCE,
-                                        Shape.Circle.INSTANCE
-                                )
-                        )
-
-                        // Start from the top-middle
-                        .position(
-                                new Relative(
-                                        0.5,
-                                        0.0
-                                )
-                        )
-
-                        .build();
-
-        binding.konfettiView.start(party);
+                        .spread(360)
+                        .colors(Arrays.asList(Color.RED, Color.GREEN, Color.BLUE, Color.YELLOW))
+                        .setSpeedBetween(0f, 30f)
+                        .position(new Position.Relative(0.5, 0.3))
+                        .build()
+        );
     }
 
+}
 
 
-    }
+

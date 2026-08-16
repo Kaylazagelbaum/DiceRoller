@@ -1,29 +1,36 @@
 <PreferenceScreen xmlns:app="http://schemas.android.com/apk/res-auto">
 
-    <PreferenceCategory app:title="@string/display_header">
+    <PreferenceCategory
+        app:title="@string/display_header"
+        app:iconSpaceReserved="false">
         <SwitchPreferenceCompat
             app:defaultValue="true"
             app:key="@string/night_mode_key"
             app:summaryOff="@string/night_mode_off"
             app:summaryOn="@string/night_mode_on"
-            app:title="@string/night_mode_title" />
+            app:title="@string/night_mode_title"
+            app:iconSpaceReserved="false" />
 
     </PreferenceCategory>
 
-    <PreferenceCategory app:title="@string/game_header">
+    <PreferenceCategory
+        app:title="@string/game_header"
+        app:iconSpaceReserved="false">
         <SwitchPreferenceCompat
             app:defaultValue="true"
             app:key="@string/turn_indicator_key"
             app:summaryOff="@string/turn_indicator_off"
             app:summaryOn="@string/turn_indicator_on"
-            app:title="@string/show_turn_indicator"/>
+            app:title="@string/show_turn_indicator"
+            app:iconSpaceReserved="false" />
 
         <SwitchPreferenceCompat
             app:defaultValue="true"
             app:key="@string/confetti_key"
             app:summaryOff="@string/confetti_on"
             app:summaryOn="@string/confetti_off"
-            app:title="@string/confetti" />
+            app:title="@string/confetti"
+            app:iconSpaceReserved="false" />
     </PreferenceCategory>
 
 </PreferenceScreen>

@@ -11,21 +11,21 @@
       
       <path android:fillColor="#00000000"
           android:pathData="m29.68,229.66 l250.65,0 0,0"
-          android:strokeColor="#000000"
+          android:strokeColor="?attr/colorControlNormal"
           android:strokeLineCap="round"
           android:strokeLineJoin="miter"
           android:strokeWidth="49.33635712"/>
 
       <path android:fillColor="#00000000"
           android:pathData="m29.68,129.66 l250.65,0 0,0"
-          android:strokeColor="#000000"
+          android:strokeColor="?attr/colorControlNormal"
           android:strokeLineCap="round"
           android:strokeLineJoin="miter"
           android:strokeWidth="49.33635712"/>
 
       <path android:fillColor="#00000000"
           android:pathData="m29.68,29.66 l250.65,0 0,0"
-          android:strokeColor="#000000"
+          android:strokeColor="?attr/colorControlNormal"
           android:strokeLineCap="round"
           android:strokeLineJoin="miter"
           android:strokeWidth="49.33635712"/>

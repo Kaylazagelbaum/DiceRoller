@@ -19,15 +19,17 @@
         app:columnCount="7"
         app:rowCount="6"
         app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintEnd_toEndOf="parent" />
+        app:layout_constraintEnd_toStartOf="@+id/turnIndicator"
+        app:layout_constraintHorizontal_chainStyle="packed" />
 
     <!-- Game Status -->
     <TextView
         android:id="@+id/turnIndicator"
-        android:layout_width="0dp"
+        android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_marginTop="@dimen/textview_margin_top"
+        android:layout_marginStart="@dimen/textview_margin_top"
         android:gravity="center"
         android:padding="@dimen/textview_padding"
         android:text="@string/player_1_s_turn"
@@ -35,8 +37,9 @@
         android:textStyle="bold"
         android:textColor="@android:color/black"
         android:background="@drawable/game_status_background"
-        app:layout_constraintTop_toBottomOf="@id/gridLayout"
-        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintStart_toEndOf="@id/gridLayout"
         app:layout_constraintEnd_toEndOf="parent" />
 
 </androidx.constraintlayout.widget.ConstraintLayout>

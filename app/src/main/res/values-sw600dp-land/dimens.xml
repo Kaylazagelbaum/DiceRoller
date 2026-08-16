@@ -1,0 +1,12 @@
+<resources>
+    <dimen name="fab_margin">24dp</dimen>
+    <dimen name="token_size">55dp</dimen>
+    <dimen name="grid_margin">3dp</dimen>
+    <dimen name="constraint_layout_padding_sides">24dp</dimen>
+    <dimen name="constraint_layout_padding_top_and_bottom">16dp</dimen>
+    <dimen name="grid_padding">10dp</dimen>
+    <dimen name="textview_margin_top">24dp</dimen>
+    <dimen name="textview_padding">16dp</dimen>
+    <dimen name="textview_text_size">22sp</dimen>
+    <dimen name="settings_horizontal_margin">48dp</dimen>
+</resources>
