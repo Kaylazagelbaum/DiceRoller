@@ -4,9 +4,11 @@ import com.example.termproject.R;
 
 import nl.dionsegijn.konfetti.xml.KonfettiView;
 
+import androidx.lifecycle.ViewModel;
+
 import java.io.Serializable;
 
-public class TermProject implements Serializable {
+public class TermProject extends ViewModel implements Serializable {
     public static final int ROWS = 6;
     public static final int COLS = 7;
 

@@ -11,6 +11,7 @@ import android.widget.TextView;
 import androidx.appcompat.app.AppCompatActivity;
 
 import com.example.termproject.R;
+import androidx.lifecycle.ViewModelProvider;
 import com.example.termproject.activities.models.TermProject;
 import com.example.termproject.databinding.ActivityMainBinding;
 import com.google.android.material.snackbar.Snackbar;
@@ -39,7 +40,7 @@ public class MainActivity extends AppCompatActivity {
     private String currentPlayer = "Player 1";
     private TextView turnIndicator;
 
-    private TermProject game = new TermProject();
+    private TermProject game;
     private boolean showTurnIndicator;
     private boolean showConfetti;
 
@@ -55,20 +56,16 @@ public class MainActivity extends AppCompatActivity {
 
         setSupportActionBar(binding.toolbar);
 
-        turnIndicator = binding.content.turnIndicator;
+        game = new ViewModelProvider(this).get(TermProject.class);
 
-        if (savedInstanceState != null) {
-            game = (TermProject) savedInstanceState.getSerializable("game_state");
-        }
+        turnIndicator = binding.content.turnIndicator;
 
         GridLayout gridLayout = binding.content.gridLayout;
         gridLayout.setColumnCount(7);
         gridLayout.setRowCount(6);
         setup_game_grid(gridLayout);
 
-        if (savedInstanceState != null) {
-            syncBoardFromModel();
-        }
+        syncBoardFromModel();
 
         // Hamburger on the LEFT
         setupMenu();
@@ -98,7 +95,6 @@ public class MainActivity extends AppCompatActivity {
     @Override
     protected void onSaveInstanceState(Bundle outState) {
         super.onSaveInstanceState(outState);
-        outState.putSerializable("game_state", game);
     }
 
     private void setupMenu() {
